@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+import java.io.InputStream;
 import java.text.BreakIterator;
 
 import java.util.Locale;
@@ -72,13 +73,8 @@ class Business implements ActionListener {
     InterviewState interviewState;
 
     Business() {
-        try {
-            businessResources = ResourceBundle.getBundle("resources.businessResources", Locale.getDefault());
-        } catch (MissingResourceException mre) {
-            mre.printStackTrace();
-            return;
-        }
-        JFrame jfrm = new JFrame(businessResources.getString("BUSINESS"));
+
+        JFrame jfrm = new JFrame("BUSINESS");
         jfrm.getContentPane().setLayout(new GridLayout(3, 1));
         jfrm.setSize(350, 200);
         jfrm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -89,12 +85,12 @@ class Business implements ActionListener {
         choicesButtons = new ButtonGroup();
         JPanel buttonPanel = new JPanel();
 
-        prevButton = new JButton(businessResources.getString("Prev"));
+        prevButton = new JButton("Prev");
         prevButton.setActionCommand("Prev");
         buttonPanel.add(prevButton);
         prevButton.addActionListener(this);
 
-        nextButton = new JButton(businessResources.getString("Next"));
+        nextButton = new JButton("Next");
         nextButton.setActionCommand("Next");
         buttonPanel.add(nextButton);
         nextButton.addActionListener(this);
@@ -107,8 +103,9 @@ class Business implements ActionListener {
         priorAnswers = new ArrayList<>();
 
         clips = new Environment();
-        clips.loadFromResource("resources/business.clp");
-        clips.loadFromResource("resources/business_en.clp" );
+        clips.loadFromResource("/business.clp");
+        clips.loadFromResource("/business_en.clp" );
+
 
         processRules();
         jfrm.setVisible(true);
@@ -126,19 +123,19 @@ class Business implements ActionListener {
         if (fv.getFactSlot("state").toString().equals("conclusion")) {
             interviewState = InterviewState.CONCLUSION;
             nextButton.setActionCommand("Restart");
-            nextButton.setText(businessResources.getString("Restart"));
+            nextButton.setText("Restart");
             prevButton.setVisible(true);
             choicesPanel.setVisible(false);
         } else if (fv.getFactSlot("state").toString().equals("greeting")) {
             interviewState = InterviewState.GREETING;
             nextButton.setActionCommand("Next");
-            nextButton.setText(businessResources.getString("Next"));
+            nextButton.setText("Next");
             prevButton.setVisible(false);
             choicesPanel.setVisible(false);
         } else {
             interviewState = InterviewState.INTERVIEW;
             nextButton.setActionCommand("Next");
-            nextButton.setText(businessResources.getString("Next"));
+            nextButton.setText("Next");
             prevButton.setVisible(true);
             choicesPanel.setVisible(true);
         }
