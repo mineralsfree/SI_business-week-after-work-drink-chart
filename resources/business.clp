@@ -49,31 +49,7 @@
    ;; Return the return value
    ?result)
 
-(deffunction MAIN::replace-spaces (?str)
-   (bind ?len (str-length ?str))
-   (bind ?i (str-index " " ?str))
-   (while (neq ?i FALSE)
-      (bind ?str (str-cat (sub-string 1 (- ?i 1) ?str) "-" (sub-string (+ ?i 1) ?len ?str)))
-      (bind ?i (str-index " " ?str)))
-   ?str)
 
-(deffunction MAIN::sym-cat-multifield (?values)
-   (bind ?rv (create$))
-   (progn$ (?v ?values)
-      (bind ?rv (create$ ?rv (sym-cat (replace-spaces ?v)))))
-   ?rv)
-
-(deffunction MAIN::multifield-to-delimited-string (?mv ?delimiter)
-   (bind ?rv "")
-   (bind ?first TRUE)
-   (progn$ (?v ?mv)
-      (if ?first
-         then
-         (bind ?first FALSE)
-         (bind ?rv (str-cat ?v))
-         else
-         (bind ?rv (str-cat ?rv ?delimiter ?v))))
-   ?rv)
 
 ;;;*****************
 ;;;* STATE METHODS *
@@ -308,6 +284,17 @@
    (handle-state interview
                  "Is he or she a good drinker?"
                  he-drinker
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+(defrule determine-have-life ""
+    (stay-radar no)
+    (not (have-life ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Do you have a life?"
+                 have-life
                  (nth$ 1 ?answers)
                  ?answers
                  (translate-av ?answers)))
@@ -593,6 +580,18 @@
                  ?answers
                  (translate-av ?answers)))
 
+(defrule determine-being-honest ""
+    (have-life yes)
+    (not (being-honest ?))
+   =>
+   (bind ?answers (create$ ok))
+   (handle-state interview
+                 "You aren't being honest. Try again"
+                 being-honest
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
 ;;;****************
 ;;;* WHAT TO DRINK *
 ;;;****************
@@ -673,3 +672,15 @@
     (trying-sleep yes))
     =>
     (handle-state conclusion  "Non-alcoholic"))
+(defrule do-office-conclusion ""
+    (declare (salience 10))
+    (or (ask-for-raise yes)
+    (just-promotion yes))
+    =>
+    (handle-state conclusion  "STOP! Do this in the office"))
+(defrule get-life-conclusion ""
+    (declare (salience 10))
+    (or (being-honest ok)
+    (have-life no))
+    =>
+    (handle-state conclusion  "STOP! Get a life"))

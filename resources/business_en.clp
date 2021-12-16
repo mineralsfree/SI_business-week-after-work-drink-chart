@@ -48,4 +48,7 @@
 (text-for-id
    (id give-advice)
    (text "To give advice"))
+(text-for-id
+   (id ok)
+   (text "Ok"))
     )
