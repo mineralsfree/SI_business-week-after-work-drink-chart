@@ -334,6 +334,117 @@
                  ?answers
                  (translate-av ?answers)))
 
+;;;* BOSS *
+
+(defrule determine-did-he-ask""
+   (drink-with boss)
+   (not (did-he-ask ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Did he or she ask you to drinks?"
+                 did-he-ask
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-celebrating-sth ""
+    (did-he-ask yes)
+    (not (celebrating-sth  ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Are you celebrating something?"
+                 celebrating-sth
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-ask-for-raise ""
+    (did-he-ask no)
+    (not (ask-for-raise  ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Are you asking for a raise?"
+                 ask-for-raise
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-in-trouble ""
+    (celebrating-sth no)
+    (not (in-trouble  ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Are you worried you're in trouble?"
+                 in-trouble
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-trying-sleep ""
+    (or (in-trouble no)
+    (trying-seduce no))
+    (not (trying-sleep  ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Is he or she trying to sleep with you?"
+                 trying-sleep
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-talk-back ""
+    (in-trouble yes)
+    (not (talk-back  ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Will you talk back?"
+                 talk-back
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-just-promotion ""
+    (ask-for-raise no)
+    (not (just-promotion ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Just a promotion?"
+                 just-promotion
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-trying-seduce ""
+    (just-promotion no)
+    (not (trying-seduce ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Are you trying to seduce your boss?"
+                 trying-seduce
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-good-idea ""
+    (trying-seduce yes)
+    (not (good-idea ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Are you sure this is a good idea?"
+                 good-idea
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
 ;;;****************
 ;;;* WHAT TO DRINK *
 ;;;****************
@@ -362,6 +473,7 @@
     (expense-big no)
     (like-people no)
     (feel-obligated no)
+    (good-idea yes)
     )
 
     =>
@@ -371,7 +483,9 @@
    (declare (salience 10))
    (or (take-to-dinner no)
    (mormon no)
-   (get-wasted no))
+   (get-wasted no)
+   (trying-sleep no)
+   (talk-back no))
    =>
    (handle-state conclusion  "Wine"))
 
@@ -379,18 +493,22 @@
    (declare (salience 10))
    (or (friday-night yes)
        (take-to-dinner yes)
-       (planning-work no))
+       (planning-work no)
+       (good-idea no))
    =>
    (handle-state conclusion  "Martini"))
 
 (defrule bubbly-conclusion ""
    (declare (salience 10))
    (or (like-person yes)
-   (planning-work yes))
+   (planning-work yes)
+   (celebrating-sth yes))
    =>
    (handle-state conclusion  "Bubbly"))
 (defrule non-alcoholic-conclusion ""
     (declare (salience 10))
-    (mormon yes)
+    (or (mormon yes)
+    (talk-back yes)
+    (trying-sleep yes))
     =>
     (handle-state conclusion  "Non-alcoholic"))
