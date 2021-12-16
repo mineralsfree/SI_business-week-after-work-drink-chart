@@ -211,7 +211,7 @@
                  (translate-av ?answers)))
 (defrule determine-like-people ""
     (official-function no)
-    (not (like-person ?))
+    (not (like-people ?))
    =>
    (bind ?answers (create$ no eh))
    (handle-state interview
@@ -266,7 +266,8 @@
                  (translate-av ?answers)))
 
 (defrule determine-stay-on-radar ""
-    (close-deal no)
+    (or (close-deal no)
+    (like-person no))
     (not (stay-radar ?))
    =>
    (bind ?answers (create$ no yes))
