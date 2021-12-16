@@ -445,6 +445,154 @@
                  ?answers
                  (translate-av ?answers)))
 
+;;;* COLLEAGUE *
+
+(defrule determine-why-college ""
+   (drink-with college)
+   (not (why-college ?))
+   =>
+   (bind ?answers (create$ gripe-work ask-advice give-advice))
+   (handle-state interview
+                 "Why?"
+                 why-college
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-work-drinks ""
+    (why-college gripe-work)
+    (not (work-drinks ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Can this be expensed as work drinks?"
+                 work-drinks
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-companion-male ""
+    (work-drinks yes)
+    (not (companion-male ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Is your companion male?"
+                 companion-male
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-girls-night ""
+    (companion-male no)
+    (not (girls-night ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Is this is girls' night?"
+                 girls-night
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-get-fired ""
+    (why-college ask-advice)
+    (not (get-fired ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Are you about to get fired?"
+                 get-fired
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-scheming-promotion ""
+    (get-fired no)
+    (not (scheming-promotion ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Just scheming for a promotion?"
+                 scheming-promotion
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-can-help ""
+    (scheming-promotion yes)
+    (not (can-help ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Can this person help you?"
+                 can-help
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-morph-bitchfest ""
+    (or (scheming-promotion no)
+    (can-help no))
+    (not (morph-bitchfest ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Will this morph into a bitchfest?"
+                 morph-bitchfest
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-invite-out ""
+    (why-college give-advice)
+    (not (invite-out ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Did he or she invite you out?"
+                 invite-out
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-performance-warning ""
+    (invite-out no)
+    (not (performance-warning ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Is this a performance warning?"
+                 performance-warning
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-handle-truth ""
+    (invite-out yes)
+    (not (handle-truth ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Can this person handle the truth?"
+                 handle-truth
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
+(defrule determine-is-crier ""
+    (or (performance-warning yes)
+    (handle-truth no))
+    (not (is-crier ?))
+   =>
+   (bind ?answers (create$ no yes))
+   (handle-state interview
+                 "Is he or she a crier?"
+                 is-crier
+                 (nth$ 1 ?answers)
+                 ?answers
+                 (translate-av ?answers)))
+
 ;;;****************
 ;;;* WHAT TO DRINK *
 ;;;****************
@@ -453,18 +601,25 @@
    (or
    (major-celebration no)
    (feel-obligated yes)
+   (morph-bitchfest no)
    )
    =>
    (handle-state conclusion  "Highball"))
 (defrule beer-conclusion ""
     (declare (salience 10))
-    (write-off no)
+    (or (write-off no)
+    (work-drinks no)
+    (girls-night no)
+    (morph-bitchfest yes))
     =>
     (handle-state conclusion  "Beer"))
 
 (defrule lowball-conclusion ""
     (declare (salience 10))
+    (or
     (write-off yes)
+    (companion-male yes)
+    (performance-warning no))
     =>
     (handle-state conclusion  "Lowball"))
 (defrule cocktail-conclusion ""
@@ -474,6 +629,8 @@
     (like-people no)
     (feel-obligated no)
     (good-idea yes)
+    (girls-night yes)
+    (is-crier no)
     )
 
     =>
@@ -485,7 +642,9 @@
    (mormon no)
    (get-wasted no)
    (trying-sleep no)
-   (talk-back no))
+   (talk-back no)
+   (handle-truth yes)
+   (can-help yes))
    =>
    (handle-state conclusion  "Wine"))
 
@@ -494,7 +653,9 @@
    (or (friday-night yes)
        (take-to-dinner yes)
        (planning-work no)
-       (good-idea no))
+       (good-idea no)
+       (is-crier yes)
+       (get-fired yes))
    =>
    (handle-state conclusion  "Martini"))
 

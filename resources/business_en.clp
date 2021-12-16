@@ -39,4 +39,13 @@
 (text-for-id
    (id going_away_party)
    (text "Going away party"))
+(text-for-id
+   (id ask-advice)
+   (text "To ask for advice"))
+(text-for-id
+   (id gripe-work)
+   (text "To gripe about work"))
+(text-for-id
+   (id give-advice)
+   (text "To give advice"))
     )
